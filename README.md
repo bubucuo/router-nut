@@ -1,4 +1,4 @@
-# lesson3-环境配置与 react-router 简介
+# lesson5-Route 渲染内容的三种方式
 
 [TOC]
 
@@ -7,104 +7,187 @@
 1. [React 官网](https://react.docschina.org/)
 2. [react-router](http://react-router.docschina.org/)
 
+
+
 ## 课堂目标
 
-1. 掌握 cra 环境
+2. 掌握 Route 渲染内容的三种方式
+2. 掌握 404 路由
 
-2. 掌握 react-router 的基本使用
+
 
 ## 知识点
 
-### 快速开始
+Route 渲染优先级：children>component>render。
 
-```bash
-npx create-react-app router-nut
-cd router-nut
-yarn start
-```
+三者能接收到同样的[route props]，包括 match, location and history，但是当不匹配的时候，children 的 match 为 null。
 
-### 配置 less 与装饰器
-
-```bash
-yarn add @craco/craco craco-less @babel/plugin-proposal-decorators
-```
-
-根目录下添加 craco.config.js 文件
-
-```js
-// * 配置完成后记得重启下
-const CracoLessPlugin = require("craco-less");
-
-module.exports = {
-  babel: {
-    //用来支持装饰器
-    plugins: [["@babel/plugin-proposal-decorators", {legacy: true}]]
-  },
-  plugins: [
-    {
-      plugin: CracoLessPlugin
-    }
-  ]
-};
-```
-
-修改 package.json
-
-```json
- "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test"
-  },
-```
-
-### react-router 简介
-
-react-router 包含 3 个库，react-router、react-router-dom 和 react-router-native。react-router 提供最基本的路由功能，实际使用的时候我们不会直接安装 react-router，而是根据应用运行的环境选择安装 react-router-dom（在浏览器中使用）或 react-router-native（在 rn 中使用）。react-router-dom 和 react-router-native 都依赖 react-router，所以在安装时，react-router 也会自动安装，创建 web 应用。
-
-#### 安装
-
-```bash
-yarn add react-router-dom
-```
-
-#### BrowserRouter 与 HashRouter 对比
-
-1. HashRouter 最简单，不需要服务器端渲染，靠浏览器的#的来区分 path 就可以，BrowserRouter 需要服务器端对不同的 URL 返回不同的 HTML，后端配置可[参考](https://react-guide.github.io/react-router-cn/docs/guides/basics/Histories.html)。
-2. BrowserRouter 使用 HTML5 history API（ pushState，replaceState 和 popstate 事件），让页面的 UI 同步与 URL。
-3. HashRouter 不支持 location.key 和 location.state，动态路由跳转需要通过?传递参数。
-4. Hash history 不需要服务器任何配置就可以运行，如果你刚刚入门，那就使用它吧。但是我们不推荐在实际线上环境中用到它，因为每一个 web 应用都应该渴望使用 `browserHistory`。
-
-#### MemoryRouter
-
-把 URL 的历史记录保存在内存中的 `<Router>`（不读取、不写入地址栏）。在测试和非浏览器环境中很有用，如 React Native。
-
-#### 基本使用
-
-react-router 中奉行一切皆组件的思想，路由器-**Router**、链接-**Link**、路由-**Route**、独占-**Switch**、重定向-**Redirect**都以组件形式存在
+这三种方式互斥，你只能用一种。
 
 ```jsx
-import {BrowserRouter as Router, Route, Link} from "react-router-dom";
+import React, {useState} from "react";
+import {BrowserRouter as Router, Route, Link, Switch} from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
 import LoginPage from "./pages/LoginPage";
+import _404Page from "./pages/_404Page";
 
 function App() {
+  const [count, setCount] = useState(0);
   return (
     <div className="App">
+      <button
+        onClick={() => {
+          setCount(count + 1);
+        }}>
+        add: {count}
+      </button>
       <Router>
         <Link to="/">首页</Link>
         <Link to="/user">用户中心</Link>
         <Link to="/login">登录</Link>
+        {/* 独占路由 */}
+        <Switch>
+          <Route
+            path="/"
+            exact
+            //children={children}
+            component={HomePage}
 
-        {/* 根路由要添加exact，实现精确匹配 */}
-        <Route exact path="/" component={HomePage} />
-        <Route path="/user" component={UserPage} />
-        <Route path="/login" component={LoginPage} />
+            // ! 渲染component的时候会调用React.createElement，如果使用下面这种匿名函数的形式，每次都会生成一个新的匿名的函数，
+            // ! 导致生成的组件的type总是不相同，这个时候会产生重复的卸载和挂载
+            //!  错误举例 课下自己尝试下 观察下HomePage的didMount和willUnmount函数 */}
+            //component={() => <HomePage />}
+
+            // render={render}
+          />
+          <Route path="/user" component={UserPage} />
+          <Route path="/login" component={LoginPage} />
+          <Route component={_404Page} />
+        </Switch>
       </Router>
     </div>
   );
 }
 
 export default App;
+
+function children(props) {
+  console.log("children props", props); //sy-log
+  return <div>children</div>;
+}
+
+function render(props) {
+  console.log("props props", props); //sy-log
+  return <div>render</div>;
+}
 ```
+
+
+
+### children：func
+
+有时候，不管 location 是否匹配，你都需要渲染一些内容，这时候你可以用 children。
+
+除了不管 location 是否匹配都会被渲染之外，其它工作方法与 render 完全一样。
+
+```jsx
+import React, {Component} from "react";
+import ReactDOM from "react-dom";
+import {BrowserRouter as Router, Link, Route} from "react-router-dom";
+
+function ListItemLink({to, name, ...rest}) {
+  return (
+    <Route
+      path={to}
+      children={({match}) => (
+        <li className={match ? "active" : ""}>
+          <Link to={to} {...rest}>
+            {name}
+          </Link>
+        </li>
+      )}
+    />
+  );
+}
+
+export default class RouteChildren extends Component {
+  render() {
+    return (
+      <div>
+        <h3>RouteChildren</h3>
+        <Router>
+          <ul>
+            <ListItemLink to="/somewhere" name="链接1" />
+            <ListItemLink to="/somewhere-else" name="链接2" />
+          </ul>
+        </Router>
+      </div>
+    );
+  }
+}
+```
+
+### render：func
+
+但是当你用 render 的时候，你调用的只是个函数。但是它和 component 一样，能访问到所有的[route props]。
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom";
+import {BrowserRouter as Router, Route} from "react-router-dom";
+
+// 方便的内联渲染
+ReactDOM.render(
+  <Router>
+    <Route path="/home" render={() => <div>Home</div>} />
+  </Router>,
+  node
+);
+
+// wrapping/composing
+//把route参数传递给你的组件
+function FadingRoute({component: Component, ...rest}) {
+  return (
+    <Route {...rest} render={routeProps => <Component {...routeProps} />} />
+  );
+}
+
+ReactDOM.render(
+  <Router>
+    <FadingRoute path="/cool" component={Something} />
+  </Router>,
+  node
+);
+```
+
+### component: component
+
+只在当 location 匹配的时候渲染。
+
+
+
+### 注意
+
+当你用`component`的时候，Route 会用你指定的组件和 React.createElement 创建一个新的[React element]。这意味着当你提供的是一个内联函数的时候，每次 render 都会创建一个新的组件。这会导致不再更新已经现有组件，而是直接卸载然后再去挂载一个新的组件。因此，当用到内联函数的内联渲染时，请使用 render 或者 children。
+
+Route 核心渲染代码如下：
+
+![image-20200224174023810](https://tva1.sinaimg.cn/large/0082zybply1gc7moo8djgj311c0u0wv0.jpg)
+
+
+
+### 404 页面
+
+设定一个没有 path 的路由在路由列表最后面，表示一定匹配
+
+```react
+<Switch>
+  <Route path="/" exact component={HomePage} />
+  <Route path="/user" component={UserPage} />
+  <Route path="/login" component={LoginPage} />
+  <Route component={_404Page} />
+</Switch>
+```
+
+### 
