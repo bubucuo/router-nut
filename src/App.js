@@ -1,6 +1,11 @@
 import {useState} from "react";
 // import {BrowserRouter as Router, Route, Link, Switch} from "react-router-dom";
-import {BrowserRouter as Router, Route, Link} from "./react-router-dom-nut";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch
+} from "./react-router-dom-nut";
 
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
@@ -24,21 +29,21 @@ function App() {
         <Link to="/login">登录</Link>
         <Link to="/product/123">商品</Link>
 
-        {/* <Switch> */}
-        <Route
-          path="/"
-          exact
-          // children={children}
-          //component={HomePage}
-          //render={() => <HomePage />}
-          render={render}
-        />
-        <Route path="/product/:xx" component={Product} />
-        <Route path="/user" component={UserPage} />
-        <Route path="/login" component={LoginPage} />
+        <Switch>
+          <Route
+            path="/"
+            exact
+            children={children}
+            //component={HomePage}
+            //render={() => <HomePage />}
+            // render={render}
+          />
+          <Route path="/product/:xx" component={Product} />
+          <Route path="/user" component={UserPage} />
+          <Route path="/login" component={LoginPage} />
 
-        <Route component={_404Page} />
-        {/* </Switch> */}
+          <Route component={_404Page} />
+        </Switch>
       </Router>
     </div>
   );

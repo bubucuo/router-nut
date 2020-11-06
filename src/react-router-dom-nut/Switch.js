@@ -1,33 +1,5 @@
-# lesson12 - 手写实现Switch
-
-b站账号：欧米伽莎士比亚
-
-[b站视频地址](https://www.bilibili.com/video/BV1XZ4y1V7ME/)
-
-[TOC]
-
-## 资源
-
-1. [React 官网](https://react.docschina.org/)
-2. [react-router](http://react-router.docschina.org/)
-
-
-
-## 课堂目标
-
-1. react-router实现
-
-
-
-## 知识点 
-
-### 实现Switch
-
-渲染与该地址匹配的第一个子节点 `<Route>` 或者 `<Redirect>`。
-
-```jsx
-import React, {Component, isValidElement} from "react";
-import {RouterContext} from "./Context";
+import React, {Component} from "react";
+import {RouterContext} from "./RouterContext";
 import matchPath from "./matchPath";
 
 export default class Switch extends Component {
@@ -35,9 +7,10 @@ export default class Switch extends Component {
     return (
       <RouterContext.Consumer>
         {context => {
-          const {location} = context;
-          let match, element;
-          // children element | array
+          const location = this.props.location || context.location;
+          let match; //是否匹配
+          let element; // 匹配到元素
+
           React.Children.forEach(this.props.children, child => {
             if (match == null && React.isValidElement(child)) {
               element = child;
@@ -47,6 +20,7 @@ export default class Switch extends Component {
                 : context.match;
             }
           });
+
           return match
             ? React.cloneElement(element, {computedMatch: match})
             : null;
@@ -55,5 +29,3 @@ export default class Switch extends Component {
     );
   }
 }
-```
-
