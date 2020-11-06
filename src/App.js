@@ -6,19 +6,21 @@ import LoginPage from "./pages/LoginPage";
 import _404Page from "./pages/_404Page";
 
 function App() {
-  const [count, setCount] = useState(0);
+  // const [count, setCount] = useState(0);
+  const id = 123;
   return (
     <div className="App">
-      <button
+      {/* <button
         onClick={() => {
           setCount(count + 1);
         }}>
         add: {count}
-      </button>
+      </button> */}
       <Router>
         <Link to="/">首页</Link>
         <Link to="/user">用户中心</Link>
         <Link to="/login">登录</Link>
+        <Link to="/product/123">商品</Link>
 
         <Switch>
           <Route
@@ -29,13 +31,13 @@ function App() {
             //render={() => <HomePage />}
             //render={render}
           />
-
           <Route path="/" exact component={HomePage}>
             HomePage
           </Route>
-
+          <Route path="/product/:xx" component={Product} />
           <Route path="/user" component={UserPage} />
           <Route path="/login" component={LoginPage} />
+
           <Route component={_404Page} />
         </Switch>
       </Router>
@@ -44,6 +46,12 @@ function App() {
 }
 
 export default App;
+
+function Product(props) {
+  console.log("props", props); //sy-log
+  const {xx} = props.match.params;
+  return <div>Product:{xx}</div>;
+}
 
 function children(props) {
   console.log("children props", props); //sy-log
