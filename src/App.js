@@ -49,8 +49,22 @@ export default App;
 
 function Product(props) {
   console.log("props", props); //sy-log
-  const {xx} = props.match.params;
-  return <div>Product:{xx}</div>;
+  const {match} = props;
+  const {url} = match;
+  const {xx} = match.params;
+
+  return (
+    <div>
+      Product:{xx}
+      <Link to={url + "/detail"}>详情</Link>
+      <Route path={url + "/detail"} component={Detail} />
+    </div>
+  );
+}
+
+function Detail(props) {
+  console.log("Detail props", props); //sy-log
+  return <div>Detail</div>;
 }
 
 function children(props) {

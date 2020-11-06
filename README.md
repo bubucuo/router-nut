@@ -1,4 +1,8 @@
-# lesson6 - 动态路由
+# lesson7 - 嵌套路由
+
+b站账号：欧米伽莎士比亚
+
+[b站视频地址]()
 
 [TOC]
 
@@ -11,35 +15,44 @@
 
 ## 课堂目标
 
-1. 动态路由
+1. 掌握嵌套路由
 
 
 
 ## 知识点
 
-### 动态路由
+### 嵌套路由
 
-使用:id的形式定义动态路由
+Route组件嵌套在其他页面组件中就产生了嵌套关系
 
-定义路由:
-
-```jsx
-<Route path="/product/:id" component={Product} />
-```
-
-添加导航链接:
+修改Product，添加新增和详情
 
 ```react
-<Link to={"/product/123"}>搜索</Link>
+<Route path={url + "/detail"} component={Detail} />
 ```
 
-创建Search组件并获取参数:
+
 
 ```jsx
-function Product({location, match}) {
+function Product({match}) {
   console.log("match", match); //sy-log
-  const {id} = match.params;
-  return <h1>Product-{id}</h1>;
+  const {params, url} = match;
+  const {id} = params;
+  return (
+    <div>
+      <h1>Search-{id}</h1>
+      <Link to={url + "/detail"}>详情</Link>
+      <Route path={url + "/detail"} component={Detail} />
+    </div>
+  );
+}
+
+function Detail({match}) {
+  return (
+    <div>
+      <h1>detail</h1>
+    </div>
+  );
 }
 ```
 
