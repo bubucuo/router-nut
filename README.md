@@ -1,5 +1,7 @@
 # lesson3-环境配置与 react-router 简介
 
+[b站视频教程](https://www.bilibili.com/video/BV1DT4y1F7LG)
+
 [TOC]
 
 ## 资源
