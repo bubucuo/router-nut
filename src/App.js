@@ -33,7 +33,7 @@ function App() {
           //render={() => <HomePage />}
           render={render}
         />
-        {/* <Route path="/product/:xx" component={Product} /> */}
+        <Route path="/product/:xx" component={Product} />
         <Route path="/user" component={UserPage} />
         <Route path="/login" component={LoginPage} />
 

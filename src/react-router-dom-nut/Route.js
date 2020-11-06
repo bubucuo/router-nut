@@ -8,7 +8,9 @@ export default class Route extends Component {
         {context => {
           const {location} = context;
           const {path, children, component, render} = this.props;
-          const match = matchPath(location.pathname, this.props); //location.pathname === path;
+          const match = path
+            ? matchPath(location.pathname, this.props)
+            : context.match; //location.pathname === path;
           const props = {...context, location, match};
           // children component render
           //match children 》 component》 render 》null
