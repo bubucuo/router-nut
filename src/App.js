@@ -28,10 +28,10 @@ function App() {
         <Route
           path="/"
           exact
-          //children={children}
-          component={HomePage}
+          // children={children}
+          //component={HomePage}
           //render={() => <HomePage />}
-          //render={render}
+          render={render}
         />
         {/* <Route path="/product/:xx" component={Product} /> */}
         <Route path="/user" component={UserPage} />
