@@ -1,5 +1,7 @@
 # lesson5-Route 渲染内容的三种方式
 
+[b站视频教程](https://www.bilibili.com/video/BV16z4y1C75E)
+
 [TOC]
 
 ## 资源
